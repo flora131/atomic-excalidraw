@@ -187,7 +187,7 @@ export const mockBoundingClientRect = (
 
 export const withExcalidrawDimensions = async (
   dimensions: { width: number; height: number },
-  cb: () => void,
+  cb: () => void | Promise<void>,
 ) => {
   const { h } = window;
 
@@ -197,13 +197,15 @@ export const withExcalidrawDimensions = async (
     h.app.refresh();
   });
 
-  await cb();
-
-  restoreOriginalGetBoundingClientRect();
-  act(() => {
-    h.app.refreshEditorInterface();
-    h.app.refresh();
-  });
+  try {
+    await cb();
+  } finally {
+    restoreOriginalGetBoundingClientRect();
+    act(() => {
+      h.app.refreshEditorInterface();
+      h.app.refresh();
+    });
+  }
 };
 
 export const restoreOriginalGetBoundingClientRect = () => {

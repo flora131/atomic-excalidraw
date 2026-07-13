@@ -92,6 +92,19 @@
   }
 }
 
+.styles-panel-island {
+  transition: opacity 80ms ease;
+
+  &--dragging {
+    opacity: 0;
+
+    &,
+    * {
+      pointer-events: none !important;
+    }
+  }
+}
+
 .compact-shape-actions {
   display: flex;
   flex-direction: column;

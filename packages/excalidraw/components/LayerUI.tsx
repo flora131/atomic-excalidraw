@@ -244,7 +244,14 @@ const LayerUI = ({
       >
         {isCompactStylesPanel ? (
           <Island
-            className={clsx("compact-shape-actions-island")}
+            className={clsx(
+              "compact-shape-actions-island",
+              "styles-panel-island",
+              {
+                "styles-panel-island--dragging":
+                  appState.selectedElementsAreBeingDragged,
+              },
+            )}
             padding={0}
             data-viewport-ui="side"
             data-viewport-ui-name="stylesPanel"
@@ -264,7 +271,10 @@ const LayerUI = ({
           </Island>
         ) : (
           <Island
-            className={CLASSES.SHAPE_ACTIONS_MENU}
+            className={clsx(CLASSES.SHAPE_ACTIONS_MENU, "styles-panel-island", {
+              "styles-panel-island--dragging":
+                appState.selectedElementsAreBeingDragged,
+            })}
             padding={2}
             style={{
               // we want to make sure this doesn't overflow so subtracting the

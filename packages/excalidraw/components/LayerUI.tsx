@@ -312,7 +312,9 @@ const LayerUI = ({
                   isCompactStylesPanel,
               })}
             >
-              {shouldRenderSelectedShapeActions && renderSelectedShapeActions()}
+              {shouldRenderSelectedShapeActions &&
+                !appState.selectedElementsAreBeingDragged &&
+                renderSelectedShapeActions()}
             </div>
             {/* in compact UI the pen mode button lives outside the toolbar, as
                 a separate floating button below the compact actions menu

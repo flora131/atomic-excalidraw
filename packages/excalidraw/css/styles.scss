@@ -373,9 +373,16 @@ body.excalidraw-cursor-resize * {
 
   .selected-shape-actions-container {
     width: fit-content;
+    transition: opacity 0.15s ease, visibility 0.15s ease;
 
     &--compact {
       min-width: 48px;
+    }
+
+    &--hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
     }
   }
 

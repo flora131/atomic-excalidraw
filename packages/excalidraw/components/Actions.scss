@@ -92,6 +92,11 @@
   }
 }
 
+.selected-shape-actions,
+.compact-shape-actions {
+  transition: opacity 100ms ease-out;
+}
+
 .compact-shape-actions {
   display: flex;
   flex-direction: column;
@@ -195,6 +200,17 @@
   overflow: none;
   scrollbar-width: none;
   -ms-overflow-style: none;
+}
+
+.shape-actions--hidden {
+  opacity: 0;
+  pointer-events: none;
+
+  // Compact action items opt back into pointer events for the mobile layout.
+  // Keep them inert while their mounted action bar is hidden.
+  .compact-action-item {
+    pointer-events: none;
+  }
 }
 
 .shape-actions-theme-scope {

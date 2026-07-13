@@ -150,6 +150,11 @@ const AlignFieldset = ({
   );
 };
 
+const shapeActionsAreHidden = (appState: UIAppState) =>
+  appState.selectedElementsAreBeingDragged ||
+  appState.isResizing ||
+  appState.isRotating;
+
 /**
  * Full styles panel: the wide, always-expanded layout used on desktop when the
  * UI is in "full" mode.
@@ -174,7 +179,11 @@ export const SelectedShapeActions = ({
   );
 
   return (
-    <div className="selected-shape-actions">
+    <div
+      className={clsx("selected-shape-actions", {
+        "shape-actions--hidden": shapeActionsAreHidden(appState),
+      })}
+    >
       <div>{predicates.strokeColor && renderAction("changeStrokeColor")}</div>
       {predicates.backgroundColor && (
         <div>{renderAction("changeBackgroundColor")}</div>
@@ -642,7 +651,11 @@ export const CompactShapeActions = ({
   const { container } = useExcalidrawContainer();
 
   return (
-    <div className="compact-shape-actions">
+    <div
+      className={clsx("compact-shape-actions", {
+        "shape-actions--hidden": shapeActionsAreHidden(appState),
+      })}
+    >
       {/* Stroke Color */}
       {predicates.strokeColor && (
         <div className={clsx("compact-action-item")}>
@@ -776,7 +789,9 @@ export const MobileShapeActions = ({
 
   return (
     <Island
-      className="compact-shape-actions mobile-shape-actions"
+      className={clsx("compact-shape-actions mobile-shape-actions", {
+        "shape-actions--hidden": shapeActionsAreHidden(appState),
+      })}
       style={{
         flexDirection: "row",
         boxShadow: "none",

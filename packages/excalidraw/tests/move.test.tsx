@@ -1,6 +1,6 @@
 import React from "react";
 import { vi } from "vitest";
-import { KEYS, reseed } from "@excalidraw/common";
+import { KEYS, reseed, setDesktopUIMode } from "@excalidraw/common";
 import { bindBindingElement } from "@excalidraw/element";
 import "@excalidraw/utils/test-utils";
 
@@ -188,5 +188,124 @@ describe("duplicate element on move when ALT is clicked", () => {
     expect([h.elements[1].x, h.elements[1].y]).toEqual([-10, 60]);
 
     h.elements.forEach((element) => expect(element).toMatchSnapshot());
+  });
+});
+
+describe("properties panel while moving selected elements", () => {
+  const stylesPanelSelector = '[data-viewport-ui-name="stylesPanel"]';
+
+  const createAndSelectRectangle = () => {
+    const rectangle = UI.createElement("rectangle", {
+      x: 100,
+      y: 100,
+      size: 100,
+    });
+    new Pointer("mouse").clickOn(rectangle);
+    return rectangle;
+  };
+
+  it("hides the full styles panel only while the selected element is moving", async () => {
+    unmountComponent();
+    const { container } = await render(<Excalidraw />);
+    const rectangle = createAndSelectRectangle();
+    const pointer = new Pointer("mouse");
+
+    expect(h.app.editorInterface.formFactor).toBe("desktop");
+    expect(h.app.editorInterface.desktopUIMode).toBe("full");
+    expect(container.querySelector(stylesPanelSelector)).not.toBeNull();
+
+    pointer.downAt(rectangle.x + rectangle.width / 2, rectangle.y);
+
+    expect(h.state.selectedElementsAreBeingDragged).toBe(false);
+    expect(container.querySelector(stylesPanelSelector)).not.toBeNull();
+
+    pointer.moveTo(rectangle.x + rectangle.width / 2 + 20, rectangle.y + 20);
+
+    expect(h.state.selectedElementsAreBeingDragged).toBe(true);
+    expect(container.querySelector(stylesPanelSelector)).toBeNull();
+
+    pointer.upAt();
+
+    expect(h.state.selectedElementsAreBeingDragged).toBe(false);
+    expect(container.querySelector(stylesPanelSelector)).not.toBeNull();
+  });
+
+  it("ends the drag and restores the styles panel when movement is canceled", async () => {
+    const onPointerUp = vi.fn();
+    unmountComponent();
+    const { container } = await render(
+      <Excalidraw onPointerUp={onPointerUp} />,
+    );
+    const canvas = container.querySelector("canvas.interactive")!;
+    const rectangle = createAndSelectRectangle();
+    const pointer = new Pointer("mouse");
+    onPointerUp.mockClear();
+
+    pointer.downAt(rectangle.x + rectangle.width / 2, rectangle.y);
+    pointer.moveTo(rectangle.x + rectangle.width / 2 + 20, rectangle.y + 20);
+
+    expect([rectangle.x, rectangle.y]).toEqual([120, 120]);
+    expect(h.state.selectedElementsAreBeingDragged).toBe(true);
+    expect(container.querySelector(stylesPanelSelector)).toBeNull();
+
+    fireEvent.pointerCancel(canvas, {
+      clientX: 170,
+      clientY: 120,
+      pointerId: 1,
+      pointerType: "mouse",
+    });
+
+    expect(h.state.selectedElementsAreBeingDragged).toBe(false);
+    expect(container.querySelector(stylesPanelSelector)).not.toBeNull();
+    expect(onPointerUp).toHaveBeenCalledTimes(1);
+
+    pointer.moveTo(190, 140);
+
+    expect([rectangle.x, rectangle.y]).toEqual([120, 120]);
+    expect(h.state.selectedElementsAreBeingDragged).toBe(false);
+
+    pointer.upAt();
+
+    expect(onPointerUp).toHaveBeenCalledTimes(1);
+  });
+
+  it("hides the desktop compact styles panel only while the selected element is moving", async () => {
+    setDesktopUIMode("compact");
+    unmountComponent();
+    const { container } = await render(
+      <Excalidraw UIOptions={{ getFormFactor: () => "desktop" }} />,
+    );
+    act(() => {
+      h.app.refreshEditorInterface();
+      h.app.refresh();
+    });
+    const rectangle = createAndSelectRectangle();
+    act(() => {
+      h.setState({ penDetected: true });
+    });
+    const pointer = new Pointer("mouse");
+
+    expect(h.app.editorInterface.formFactor).toBe("desktop");
+    expect(h.app.editorInterface.desktopUIMode).toBe("compact");
+    expect(container.querySelector(stylesPanelSelector)).not.toBeNull();
+    expect(container.querySelector(".App-toolbar--compact")).not.toBeNull();
+    expect(container.querySelector(".ToolIcon__penMode")).not.toBeNull();
+
+    pointer.downAt(rectangle.x + rectangle.width / 2, rectangle.y);
+
+    expect(h.state.selectedElementsAreBeingDragged).toBe(false);
+    expect(container.querySelector(stylesPanelSelector)).not.toBeNull();
+
+    pointer.moveTo(rectangle.x + rectangle.width / 2 + 20, rectangle.y + 20);
+
+    expect(h.state.selectedElementsAreBeingDragged).toBe(true);
+    expect(container.querySelector(stylesPanelSelector)).toBeNull();
+    expect(container.querySelector(".App-toolbar--compact")).not.toBeNull();
+    expect(container.querySelector(".ToolIcon__penMode")).not.toBeNull();
+
+    pointer.upAt();
+
+    expect(h.state.selectedElementsAreBeingDragged).toBe(false);
+    expect(container.querySelector(stylesPanelSelector)).not.toBeNull();
   });
 });

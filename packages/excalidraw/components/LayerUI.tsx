@@ -310,6 +310,11 @@ const LayerUI = ({
               className={clsx("selected-shape-actions-container", {
                 "selected-shape-actions-container--compact":
                   isCompactStylesPanel,
+                // temporarily hide the panel while dragging selected elements
+                // so it doesn't obstruct the view on small screens; the panel
+                // stays mounted and is restored on pointer-up
+                "selected-shape-actions-container--dragging":
+                  appState.selectedElementsAreBeingDragged,
               })}
             >
               {shouldRenderSelectedShapeActions && renderSelectedShapeActions()}

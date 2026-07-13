@@ -377,6 +377,22 @@ body.excalidraw-cursor-resize * {
     &--compact {
       min-width: 48px;
     }
+
+    // hide the selected-shape properties panel while dragging selected
+    // elements so it doesn't obstruct the view on small screens; keep it
+    // mounted (opacity + pointer-events) so scroll/popover state and layout
+    // are preserved, and restore it on pointer-up
+    &--dragging {
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 140ms ease;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      &--dragging {
+        transition: none;
+      }
+    }
   }
 
   .App-menu_top > *:last-child {

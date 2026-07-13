@@ -28,9 +28,7 @@ describe("selected shape actions visibility while dragging", () => {
     fireEvent.pointerUp(canvas);
 
     // element is selected -> panel is rendered and not hidden
-    expect(
-      h.state.selectedElementIds[h.elements[0].id],
-    ).toBeTruthy();
+    expect(h.state.selectedElementIds[h.elements[0].id]).toBeTruthy();
 
     const panel = () =>
       document.querySelector(".selected-shape-actions-container");

@@ -2454,7 +2454,7 @@ class App extends React.Component<AppProps, AppState> {
                             onClick={this.handleCanvasClick}
                             onPointerMove={this.handleCanvasPointerMove}
                             onPointerUp={this.handleCanvasPointerUp}
-                            onPointerCancel={this.removePointer}
+                            onPointerCancel={this.handleCanvasPointerCancel}
                             onTouchMove={this.handleTouchMove}
                             onPointerDown={this.handleCanvasPointerDown}
                             onDoubleClick={this.handleCanvasDoubleClick}
@@ -8455,6 +8455,13 @@ class App extends React.Component<AppProps, AppState> {
       pointerDownState.eventListeners.onKeyUp = onKeyUp;
       pointerDownState.eventListeners.onKeyDown = onKeyDown;
     }
+  };
+
+  private handleCanvasPointerCancel = (
+    event: React.PointerEvent<HTMLCanvasElement>,
+  ) => {
+    this.maybeCleanupAfterMissingPointerUp(event.nativeEvent);
+    this.removePointer(event);
   };
 
   private handleCanvasPointerUp = (

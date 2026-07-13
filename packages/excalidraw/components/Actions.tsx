@@ -776,7 +776,14 @@ export const MobileShapeActions = ({
 
   return (
     <Island
-      className="compact-shape-actions mobile-shape-actions"
+      className={clsx(
+        "compact-shape-actions mobile-shape-actions",
+        "styles-panel-island",
+        {
+          "styles-panel-island--dragging":
+            appState.selectedElementsAreBeingDragged,
+        },
+      )}
       style={{
         flexDirection: "row",
         boxShadow: "none",
